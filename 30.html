@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>연습용 모둠 · 30일 스마트폰 대체 행동 추천 앱</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+      word-break: keep-all;
+    }
+
+    .btn-touch {
+      min-height: 50px;
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .animate-pop {
+      animation: popIn 0.22s ease-out forwards;
+    }
+
+    @keyframes stampBounce {
+      0% {
+        transform: scale(0.85);
+      }
+      60% {
+        transform: scale(1.06);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .stamp-badge {
+      animation: stampBounce 0.28s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+  <!-- ==================== 상단 모둠 기획 요약 헤더 ==================== -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-900 font-extrabold text-xs sm:text-sm">
+                모둠명: 연습용
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-900 font-bold text-xs sm:text-sm">
+                주요 사용자: 4학년 3반 학생들
+              </span>
+            </div>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+              30일 스마트폰 대체 행동 추천 웹앱
+            </h1>
+          </div>
+        </div>
+
+        <!-- 실천 진행률 & 기록 초기화 버튼 -->
+        <div class="flex items-center justify-between sm:justify-end gap-3 bg-teal-50 border border-teal-200 rounded-2xl px-4 py-2.5 shrink-0">
+          <div>
+            <div class="text-xs font-bold text-teal-800 flex items-center gap-1.5">
+              <span>나의 실천 완료 스탬프</span>
+              <span id="autoSaveIndicator" class="inline-block w-2 h-2 rounded-full bg-emerald-500" title="기기 내 자동 저장됨"></span>
+            </div>
+            <div class="text-lg sm:text-xl font-extrabold text-teal-950">
+              <span id="completedCountText">0</span> <span class="text-sm font-bold text-teal-700">/ 30개 완료</span>
+              <span id="retryCountBadge" class="hidden ml-1.5 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-extrabold text-xs align-middle">
+                재도전 대기 0개
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onclick="openResetModal()"
+            class="btn-touch px-3.5 py-2 rounded-xl bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-300 font-extrabold text-xs sm:text-sm transition"
+          >
+            기록 초기화
+          </button>
+        </div>
+      </div>
+
+      <!-- 해결할 문제 & 우리 앱의 목표 안내 바 -->
+      <div class="mt-3.5 grid grid-cols-1 md:grid-cols-2 gap-2.5 text-sm">
+        <div class="bg-rose-50/80 border border-rose-200 rounded-2xl px-4 py-2.5">
+          <span class="text-xs font-extrabold text-rose-800 block">해결할 문제</span>
+          <span class="font-bold text-slate-900 text-sm sm:text-base">걸어다니면서 스마트폰을 보느라 사고가 많이 남</span>
+        </div>
+        <div class="bg-teal-50/80 border border-teal-200 rounded-2xl px-4 py-2.5">
+          <span class="text-xs font-extrabold text-teal-800 block">우리 앱의 목표</span>
+          <span class="font-bold text-slate-900 text-sm sm:text-base">스마트폰 대신 걸으며 할 수 있는 활동을 찾아봅시다</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== 메인 콘텐츠 영역 ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 space-y-7">
+
+    <!-- 모두 완료 축하 배너 (30개 모두 실천 완료 시 표시) -->
+    <div id="allCompletedBanner" class="hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-3xl p-5 sm:p-6 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-pop">
+      <div>
+        <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-100">30일 도전 최종 달성!</div>
+        <h2 class="text-xl sm:text-2xl font-extrabold mt-0.5">🎉 30가지 스마트폰 대체 활동을 모두 실천 완료했어요!</h2>
+        <p id="allCompletedSubText" class="text-xs sm:text-sm text-emerald-50 mt-1">
+          걸어 다닐 때 스마트폰을 멈추고 안전한 보행 습관을 멋지게 실천했습니다.
+        </p>
+      </div>
+      <span class="px-4 py-2 rounded-2xl bg-white/20 font-extrabold text-sm shrink-0 text-center">
+        ⭐ 30 / 30 스탬프 완성
+      </span>
+    </div>
+
+    <!-- 1. 맨 위 날짜 선택 영역 (오직 '1일차', '2일차'... 글자만 표시, 활동 내용 비공개) -->
+    <section aria-label="일차별 랜덤 활동 선택" class="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-3.5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">📅 오늘의 랜덤 활동 선택</h2>
+            <span id="totalDaysPill" class="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 font-extrabold text-xs">
+              1일차 ~ 30일차
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 mt-0.5">
+            아직 성공하지 않은 활동 중 무작위로 뽑혀 출제돼요. 어려운 활동은 다음 날 이후 다시 랜덤으로 나와 재도전할 수 있어요!
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600 shrink-0">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span> 미공개</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-teal-500 inline-block"></span> 확인함</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 실천 완료</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> 어려웠음(재도전)</span>
+        </div>
+      </div>
+
+      <!-- 1일차 ~ N일차 버튼 그리드 (오직 '1일차', '2일차'... 글자만 표시) -->
+      <div id="topDayButtonsGrid" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-10 gap-2">
+        <!-- JS로 1일차~N일차 버튼 렌더링 -->
+      </div>
+    </section>
+
+    <!-- 2. 선택한 날짜의 대체 활동 상세 화면 (미공개 상자 또는 활동 상세 + 실천 버튼) -->
+    <section id="detailSection" aria-label="선택한 날짜 대체 활동 상세" class="bg-white rounded-3xl border-2 border-teal-500/35 p-5 sm:p-7 shadow-sm">
+      <div id="detailSectionContent">
+        <!-- JS로 렌더링 -->
+      </div>
+    </section>
+
+    <!-- 3. 하단 30가지 전체 활동 목록 (날짜 번호 숨김 · 섞인 순서 · 실천 완료 스탬프 / 재도전 대기 표시) -->
+    <section aria-label="30가지 전체 대체 활동 목록" class="bg-white rounded-3xl border border-slate-200 p-5 sm:p-7 shadow-sm space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">📋 30가지 전체 대체 활동 목록</h2>
+          <p class="text-sm sm:text-base text-slate-600 mt-0.5">
+            다음 날 순서를 미리 알 수 없도록 날짜 번호는 숨기고 섞어 두었어요. <strong>‘실천했어요!’</strong>를 누른 활동은 완료 스탬프가 찍히고, <strong>‘실천이 어려웠어요’</strong>를 누른 활동은 <strong>‘재도전 대기’</strong>로 표시됩니다.
+          </p>
+        </div>
+
+        <!-- 필터 버튼 모음 -->
+        <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="전체 활동 목록 필터">
+          <button
+            type="button"
+            data-filter="all"
+            onclick="setListFilter('all')"
+            class="filter-btn btn-touch px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-teal-600 text-white transition"
+          >
+            전체 (30)
+          </button>
+          <button
+            type="button"
+            data-filter="completed"
+            onclick="setListFilter('completed')"
+            class="filter-btn btn-touch px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+          >
+            ⭐ 실천 완료
+          </button>
+          <button
+            type="button"
+            data-filter="retry"
+            onclick="setListFilter('retry')"
+            class="filter-btn btn-touch px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+          >
+            🔁 재도전 대기
+          </button>
+          <button
+            type="button"
+            data-filter="student"
+            onclick="setListFilter('student')"
+            class="filter-btn btn-touch px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+          >
+            학생 작성 (1)
+          </button>
+          <button
+            type="button"
+            data-filter="ai"
+            onclick="setListFilter('ai')"
+            class="filter-btn btn-touch px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
+          >
+            AI 제안 (29)
+          </button>
+        </div>
+      </div>
+
+      <!-- 하단 30개 활동 카드 그리드 (날짜 번호 미표시) -->
+      <div id="bottomActivitiesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <!-- JS로 렌더링 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== 하단 출처 및 AI 제작 안내 푸터 ==================== -->
+  <footer class="bg-slate-900 text-slate-200 mt-10">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-2 text-sm sm:text-base">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-700">
+        <div>
+          <span class="font-extrabold text-teal-300">조사 근거와 출처:</span>
+          <span class="font-bold text-white ml-1">sbs뉴스(https://youtu.be/josGCRR4BNU), 삼성교통안전문화연구</span>
+        </div>
+        <div class="text-xs sm:text-sm text-slate-400">
+          ※ 이 앱은 개인정보(실명·연락처·스마트폰 사용 기록)를 수집하거나 외부로 전송하지 않습니다.
+        </div>
+      </div>
+      <p class="font-bold text-slate-100 pt-1">
+        이 앱은 모둠의 기획을 바탕으로 AI 도구를 활용해 제작했습니다.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== 하단 목록 활동 상세 보기 모달 (날짜 번호 숨김) ==================== -->
+  <div id="activityInfoModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4 my-auto">
+      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
+        <div class="space-y-1.5">
+          <div id="modalActivityBadges" class="flex flex-wrap items-center gap-2"></div>
+          <h3 id="modalActivityTitle" class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug"></h3>
+        </div>
+        <button
+          type="button"
+          onclick="closeActivityInfoModal()"
+          class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 font-extrabold shrink-0"
+          aria-label="닫기"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm">
+        <span>⏱ 예상 소요 시간:</span>
+        <span id="modalActivityDuration" class="text-teal-800 font-extrabold"></span>
+      </div>
+
+      <div class="space-y-3">
+        <div class="bg-teal-50/70 rounded-2xl border border-teal-200 p-4 space-y-1">
+          <div class="text-xs sm:text-sm font-extrabold text-teal-950">📌 추천하는 방법(내용)</div>
+          <p id="modalActivityMethod" class="text-sm sm:text-base text-slate-800 leading-relaxed"></p>
+        </div>
+
+        <div class="bg-amber-50/70 rounded-2xl border border-amber-200 p-4 space-y-1">
+          <div class="text-xs sm:text-sm font-extrabold text-amber-950">⚠️ 참고사항(주의사항 등)</div>
+          <p id="modalActivityNote" class="text-sm sm:text-base text-slate-800 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-slate-100">
+        <button
+          type="button"
+          onclick="closeActivityInfoModal()"
+          class="btn-touch px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-sm sm:text-base"
+        >
+          확인
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 실천 기록 초기화 확인 모달 ==================== -->
+  <div id="resetModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">실천 스탬프 기록을 초기화할까요?</h3>
+      <p class="text-sm sm:text-base text-slate-600">
+        지금까지 진행한 일차 기록과 ‘실천했어요!’ 완료 스탬프, 재도전 대기 기록이 모두 지워지고 1일차부터 다시 시작합니다.
+      </p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button
+          type="button"
+          onclick="closeResetModal()"
+          class="btn-touch px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm sm:text-base"
+        >
+          취소
+        </button>
+        <button
+          type="button"
+          onclick="confirmResetRecords()"
+          class="btn-touch px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm sm:text-base"
+        >
+          기록 초기화하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 애플리케이션 스크립트 ==================== -->
+  <script>
+    // 연습용 모둠이 최종 확정한 30개 스마트폰 대체 활동 원본 목록 (원문 그대로 유지)
+    const BASE_ACTIVITIES = [
+      {
+        id: 1,
+        source: '학생 작성',
+        status: '채택',
+        title: '횡단보도에서는 앞을 봅시다',
+        method: '횡단보도를 건널 때 스마트폰을 주머니에 넣고 걷기',
+        duration: '1분',
+        note: '주변 차를 살피며 걷기',
+        successFeedback: '잘했어요!',
+        hardFeedback: '다음에 다시 해봐요!'
+      },
+      {
+        id: 2,
+        source: 'AI 제안',
+        status: '채택',
+        title: '출발 전 스마트폰 집 만들기',
+        method: '이동을 시작하기 전에 스마트폰을 넣을 가방 속 자리를 정하고, 도착할 때까지 꺼내지 않고 걸어요.',
+        duration: '약 10분',
+        note: '연락이 꼭 필요하면 통행을 방해하지 않는 안전한 곳에 멈춘 뒤 확인해요. 비가 오거나 미세먼지가 심한 날에는 실내에서 방과 방 사이를 이동하며 실천해요.',
+        successFeedback: '스마트폰은 가방에, 관심은 걷는 길에 두었네요!',
+        hardFeedback: '자꾸 꺼내 보고 싶을 수 있어요. 다음에는 가까운 목적지까지 넣어 두는 것부터 시작해요.'
+      },
+      {
+        id: 3,
+        source: 'AI 제안',
+        status: '채택',
+        title: '우리 집 앞 안전 도착 미션',
+        method: '익숙한 짧은 보행 구간을 정하고, 화면을 보지 않은 채 목적지까지 이동해요. 도착한 뒤 실천 여부를 종이에 표시해요.',
+        duration: '약 5~10분',
+        note: '일부러 먼 길을 가거나 기록을 위해 서두르지 않아요. 비가 오거나 미세먼지가 심한 날에는 집 안의 짧은 이동 구간으로 바꿔요.',
+        successFeedback: '짧은 길에서도 스스로 정한 약속을 지켰어요!',
+        hardFeedback: '중간에 확인했어도 괜찮아요. 다음에는 구간을 더 짧게 정해 봐요.'
+      },
+      {
+        id: 4,
+        source: 'AI 제안',
+        status: '채택',
+        title: '알림 대신 도착 후 확인 약속',
+        method: '출발 전에 알림이 와도 도착한 뒤 확인하겠다고 정해요. 걷는 동안에는 주변 통행 상황을 살피며 이동해요.',
+        duration: '약 10분',
+        note: '보호자와 필요한 연락 방법을 미리 정해요. 급한 연락은 안전한 곳에 멈춰 확인해요. 비가 오거나 미세먼지가 심한 날에는 실내 이동 때 실천해요.',
+        successFeedback: '알림보다 지금 걷는 순간을 먼저 챙겼네요!',
+        hardFeedback: '알림이 궁금한 건 자연스러워요. 다음에는 한 번의 짧은 이동 동안만 도전해요.'
+      },
+      {
+        id: 5,
+        source: 'AI 제안',
+        status: '채택',
+        title: '연락할 때 멈춤 자리 찾기',
+        method: '익숙한 길을 걸으며 연락이 필요할 때 멈출 수 있는 넓고 안전한 장소를 생각해요. 도착한 뒤 그 장소를 말로 설명해요.',
+        duration: '약 10분',
+        note: '차도 가장자리, 주차장 출입구, 계단, 자전거길은 멈춤 장소에서 제외해요. 비가 오거나 미세먼지가 심한 날에는 실내 통로에서 출입문을 막지 않는 자리를 찾아봐요.',
+        successFeedback: '연락이 필요할 때 어떻게 행동할지 준비했어요!',
+        hardFeedback: '안전한 자리가 바로 떠오르지 않을 수 있어요. 어른과 함께 한 곳만 찾아봐요.'
+      },
+      {
+        id: 6,
+        source: 'AI 제안',
+        status: '채택',
+        title: '출입문 앞 잠깐 확인',
+        method: '건물 출입문으로 나가기 전 잠깐 멈춰 밖의 보행자와 자전거 움직임을 확인한 뒤 천천히 나가요.',
+        duration: '약 5분',
+        note: '출입문을 막거나 문 가까이 오래 서 있지 않아요. 비가 오거나 미세먼지가 심한 날에는 교실이나 방에서 복도로 나올 때 연습해요.',
+        successFeedback: '문을 나서는 순간에도 주변을 살폈네요!',
+        hardFeedback: '평소처럼 바로 나갈 수도 있어요. 다음 출입문에서 한 번만 떠올려 봐요.'
+      },
+      {
+        id: 7,
+        source: 'AI 제안',
+        status: '채택',
+        title: '골목 모퉁이 천천히 돌기',
+        method: '익숙한 길의 모퉁이에서는 속도를 줄이고, 다른 사람이나 이동 수단이 오는지 확인하며 돌아요.',
+        duration: '약 10분',
+        note: '차도 쪽으로 몸을 내밀어 확인하지 않아요. 비가 오거나 미세먼지가 심한 날에는 실내 복도 모퉁이에서 뛰지 않고 돌아보는 활동으로 바꿔요.',
+        successFeedback: '보이지 않는 모퉁이에서도 서두르지 않았어요!',
+        hardFeedback: '모퉁이를 지나고 나서 생각났어도 좋아요. 다음 모퉁이에서 다시 실천해요.'
+      },
+      {
+        id: 8,
+        source: 'AI 제안',
+        status: '채택',
+        title: '주차장 출입구 확인하기',
+        method: '평소 보행 경로에 주차장 출입구가 있으면 접근하기 전에 속도를 줄이고, 드나드는 차량이 있는지 확인해요.',
+        duration: '약 10분',
+        note: '활동을 위해 주차장에 들어가거나 출입구에서 기다리지 않아요. 비가 오거나 미세먼지가 심한 날에는 종이에 출입구 그림을 그려 안전한 행동을 설명해요.',
+        successFeedback: '차량이 나올 수 있는 곳을 알아보고 조심했네요!',
+        hardFeedback: '출입구를 놓칠 수도 있어요. 다음에는 보호자와 함께 위치부터 알아봐요.'
+      },
+      {
+        id: 9,
+        source: 'AI 제안',
+        status: '채택',
+        title: '보도 안에서 여유 있게 걷기',
+        method: '보도가 있는 길에서 차도와 떨어진 보행 공간을 이용하고, 다른 사람과 부딪히지 않도록 여유를 두고 걸어요.',
+        duration: '약 10분',
+        note: '자리를 지키려고 다른 사람을 밀거나 갑자기 방향을 바꾸지 않아요. 비가 오거나 미세먼지가 심한 날에는 실내 통로에서 서로 간격을 두고 걸어요.',
+        successFeedback: '나와 다른 사람의 이동 공간을 함께 챙겼어요!',
+        hardFeedback: '사람이 많으면 공간을 잡기 어려워요. 다음에는 속도를 줄이는 것부터 해 봐요.'
+      },
+      {
+        id: 10,
+        source: 'AI 제안',
+        status: '채택',
+        title: '계단에서는 대화 잠깐 쉬기',
+        method: '계단을 이용할 때 스마트폰을 넣고 대화를 잠시 멈춰요. 난간을 잡을 수 있도록 한 손을 비우고 한 계단씩 이동해요.',
+        duration: '약 5분',
+        note: '연습하려고 계단을 반복해서 오르내리지 않고 필요한 이동 때만 실천해요. 앞사람을 재촉하지 않아요.',
+        successFeedback: '계단에서 해야 할 행동에 집중했어요!',
+        hardFeedback: '친구와 이야기하다 잊을 수 있어요. 다음 계단에서는 휴대전화를 넣는 것부터 해 봐요.'
+      },
+      {
+        id: 11,
+        source: 'AI 제안',
+        status: '채택',
+        title: '작은 장애물은 멈춰서 판단',
+        method: '걷는 길에 물건이나 장애물이 있으면 서두르지 말고, 다른 사람의 이동을 확인한 뒤 여유 있는 쪽으로 피해 가요.',
+        duration: '약 10분',
+        note: '장애물을 뛰어넘거나 차도로 내려가 피하지 않아요. 안전하게 지날 수 없으면 어른에게 도움을 요청해요. 비가 오거나 미세먼지가 심한 날에는 실내 통로에서 실천해요.',
+        successFeedback: '장애물을 보고 안전한 방법을 선택했어요!',
+        hardFeedback: '순간적으로 급해질 수 있어요. 다음에는 먼저 속도를 줄여 봐요.'
+      },
+      {
+        id: 12,
+        source: 'AI 제안',
+        status: '채택',
+        title: '정류장에서는 차분하게 기다리기',
+        method: '버스 정류장에서 스마트폰 대신 승차 위치와 안내를 확인하고, 차도와 거리를 둔 곳에서 차분히 기다려요.',
+        duration: '약 5~10분',
+        note: '버스가 보여도 뛰거나 차도로 내려가지 않아요. 실제 버스를 이용할 때만 실천해요. 비가 오거나 미세먼지가 심한 날에는 실내에서 의자를 놓고 기다리기와 차례 지키기를 연습해요.',
+        successFeedback: '기다리는 시간에도 안전한 위치를 지켰어요!',
+        hardFeedback: '버스가 오면 급해질 수 있어요. 다음에는 서 있을 위치부터 정해 봐요.'
+      },
+      {
+        id: 13,
+        source: 'AI 제안',
+        status: '채택',
+        title: '타고 내릴 때 화면 쉬기',
+        method: '버스 등 대중교통을 타고 내릴 때 스마트폰을 가방에 넣고, 발 디딜 곳과 주변 사람을 확인하며 이동해요.',
+        duration: '약 5분',
+        note: '문이 닫히려 할 때 무리하게 타지 않아요. 실제 이용할 때만 실천해요. 비가 오거나 미세먼지가 심한 날에는 실내에서 문턱을 천천히 통과하는 연습으로 바꿔요.',
+        successFeedback: '타고 내리는 짧은 순간에도 이동에 집중했어요!',
+        hardFeedback: '잠깐이라 괜찮다고 느낄 수 있어요. 다음에는 타기 전에 미리 넣어 둬요.'
+      },
+      {
+        id: 14,
+        source: 'AI 제안',
+        status: '채택',
+        title: '이어폰 대신 주변 소리 듣기',
+        method: '걸어서 이동하는 동안 이어폰을 넣어 두고, 주변 사람의 말이나 이동 상황에 주의를 기울여요.',
+        duration: '약 10분',
+        note: '소리의 정체를 맞히는 게임을 하거나 소리가 나는 곳을 찾아가지 않아요. 눈으로도 주변을 확인해요. 비가 오거나 미세먼지가 심한 날에는 실내 이동 때 실천해요.',
+        successFeedback: '주변을 알아차릴 수 있도록 준비했네요!',
+        hardFeedback: '음악이 없어 심심할 수 있어요. 다음에는 짧은 이동 한 번만 도전해요.'
+      },
+      {
+        id: 15,
+        source: 'AI 제안',
+        status: '채택',
+        title: '학교 안 안전한 이동 연습',
+        method: '교실에서 도서관 등 허용된 장소로 이동할 때 스마트폰을 넣고, 뛰지 않으며 복도와 출입문의 상황을 살펴요.',
+        duration: '약 5~10분',
+        note: '학교 규칙을 따르고 수업 중 허락 없이 이동하지 않아요. 다른 반의 수업을 방해하지 않도록 조용히 걸어요.',
+        successFeedback: '익숙한 학교 안에서도 차분하게 이동했네요!',
+        hardFeedback: '익숙한 곳이라 방심할 수 있어요. 다음 이동에서는 뛰지 않기부터 실천해요.'
+      },
+      {
+        id: 16,
+        source: 'AI 제안',
+        status: '채택',
+        title: '현관문 나서기 전 스마트폰 가방에 넣고 등굣길 풍경 3가지 찾기',
+        method: '집을 나서기 전에 스마트폰 화면을 끄고 가방 안에 넣은 뒤, 학교까지 걸으면서 계절 꽃, 안전 표지판, 새로 생긴 가게 등 3가지를 찾아봅니다.',
+        duration: '약 15분',
+        note: '걷는 중에는 절대 스마트폰을 꺼내지 마세요. 비가 오거나 미세먼지가 심할 때는 창밖 풍경 3가지 관찰하기로 바꿉니다.',
+        successFeedback: '멋져요! 화면 대신 주변 세상을 살피며 안전하게 등교했네요!',
+        hardFeedback: '괜찮아요! 처음엔 습관을 바꾸기 어려울 수 있어요. 내일은 횡단보도 앞에서만이라도 화면을 꺼 볼까요?'
+      },
+      {
+        id: 17,
+        source: 'AI 제안',
+        status: '채택',
+        title: '횡단보도 앞 3초 멈춤 후 좌우 살피며 안전하게 건너기',
+        method: '횡단보도에 도착하면 걸음을 3초 멈추고, 이어폰을 빼거나 화면을 끈 상태에서 왼쪽·오른쪽에서 오는 차량을 확인한 뒤 건넙니다.',
+        duration: '약 10분',
+        note: '초록불로 바뀌었더라도 곧바로 뛰어나가지 말고 차가 완전히 멈췄는지 확인한 뒤 건너세요.',
+        successFeedback: '최고예요! 3초 멈춤 약속을 지키며 스스로 안전을 지켰어요!',
+        hardFeedback: '조급한 마음이 들 때가 있죠. 다음 횡단보도에서는 멈춤 선 앞에서 심호흡 한 번만 먼저 해 보아요.'
+      },
+      {
+        id: 18,
+        source: 'AI 제안',
+        status: '채택',
+        title: '계단·복도 이동 시 주머니에 손 넣지 않고 바른 자세로 걷기',
+        method: '학교 복도나 아파트 계단을 오르내릴 때 스마트폰을 주머니나 가방에 넣고, 시선을 앞쪽으로 둔 채 천천히 걷습니다.',
+        duration: '약 10분',
+        note: '계단에서 화면을 보거나 주머니에 손을 넣으면 발을 헛디딜 위험이 크므로 두 손을 자유롭게 두고 이동하세요.',
+        successFeedback: '안전 제일! 계단과 복도에서 바른 자세로 멋지게 이동했네요!',
+        hardFeedback: '무심코 화면을 볼 뻔했나요? 계단 첫 칸을 밟기 전에 화면을 끄는 습관을 연습해 보아요.'
+      },
+      {
+        id: 19,
+        source: 'AI 제안',
+        status: '채택',
+        title: '하굣길에 동네 안전 표지판과 위험 요소 찾아 머릿속 지도 그리기',
+        method: '하교할 때 스마트폰을 보지 않고 어린이 보호구역 표지판, 공사 구간, 좁은 골목길 위치를 살피며 안전한 귀갓길을 확인합니다.',
+        duration: '약 15분',
+        note: '혼자 골목길로 들어가지 말고 밝고 사람이 다니는 큰길을 이용하세요. 비 오는 날은 집에서 안전한 통학로를 종이에 그려 봅니다.',
+        successFeedback: '훌륭해요! 우리 동네 안전 지킴이처럼 주변을 꼼꼼히 살폈네요!',
+        hardFeedback: '오늘은 피곤해서 그냥 지나쳤나요? 내일은 집 근처 횡단보도 한 곳의 표지판부터 살펴보아요.'
+      },
+      {
+        id: 20,
+        source: 'AI 제안',
+        status: '채택',
+        title: '버스·지하철 이동 중 화면 대신 창밖 풍경 보며 정류장 이름 읽기',
+        method: '대중교통을 이용할 때 고개를 숙여 스마트폰을 보는 대신 창밖 거리 모습을 구경하고 안내판에 나오는 다음 정류장 이름을 확인합니다.',
+        duration: '약 15~20분',
+        note: '차량이 흔들릴 때 화면을 보면 어지러울 수 있고 내릴 곳을 지나칠 수 있으니 주변 승객과 안내 방송에 귀를 기울이세요.',
+        successFeedback: '멋져요! 흔들리는 차 안에서 눈을 쉬게 하고 여유롭게 이동했네요!',
+        hardFeedback: '심심해서 스마트폰을 꺼냈다면 다음 정거장 두 구간만이라도 창밖을 바라보며 눈을 쉬게 해 주세요.'
+      },
+      {
+        id: 21,
+        source: 'AI 제안',
+        status: '채택',
+        title: '이어폰 한쪽 또는 모두 빼고 주변 소리 들으며 안전하게 산책하기',
+        method: '동네를 걸을 때 이어폰과 스마트폰을 가방에 넣고, 발소리·새소리·자동차 소리를 귀로 들으며 주변 상황을 살피며 걷습니다.',
+        duration: '약 15분',
+        note: '어두워진 저녁에는 혼자 산책하지 말고 가족과 함께 밝은 길로 다니세요. 외출이 어려울 때는 창문을 열고 바깥 소리에 귀 기울여 봅니다.',
+        successFeedback: '안전 감각 최고! 귀와 눈을 활짝 열고 주변을 살피며 멋지게 걸었네요!',
+        hardFeedback: '밖에 나가기 어려웠다면 집 안에서 스마트폰 소리를 끄고 창밖에서 들리는 소리 3가지를 찾아 적어 보아요.'
+      },
+      {
+        id: 22,
+        source: 'AI 제안',
+        status: '채택',
+        title: '엘리베이터·현관 입구에서 화면 끄고 주변 이웃과 밝게 인사하기',
+        method: '아파트 복도나 현관, 엘리베이터를 이용할 때 스마트폰에서 눈을 떼고 주변에 오는 사람이나 자전거·택배 상자가 있는지 살피며 인사합니다.',
+        duration: '약 5~10분',
+        note: '출입문 근처에서는 갑자기 문이 열리거나 자전거·킥보드가 지나갈 수 있으니 항상 시선을 전방에 두세요.',
+        successFeedback: '예의 바르고 안전해요! 주변도 살피고 따뜻한 인사도 나누었네요!',
+        hardFeedback: '부끄러워서 인사를 못 했더라도 화면을 끄고 앞을 보며 걸었다면 절반은 성공이에요!'
+      },
+      {
+        id: 23,
+        source: 'AI 제안',
+        status: '채택',
+        title: '가족과 함께 저녁 산책하며 우리 동네 밝은 안전 귀갓길 점검하기',
+        method: '저녁 식사 후 가족과 20분간 동네를 걸으며 가로등이 밝은 길과 보행 중 주의해야 할 교차로 위치를 함께 이야기 나눕니다.',
+        duration: '약 20분',
+        note: '반드시 보호자와 함께 밝은 인도로만 걷고, 비나 추위로 외출이 어려울 때는 거실에서 동네 지도를 보며 안전 경로를 이야기합니다.',
+        successFeedback: '든든해요! 가족과 대화도 나누고 안전 귀갓길도 확인한 알찬 시간이었네요!',
+        hardFeedback: '함께 산책할 시간이 나지 않았다면 주말 낮 시간에 가족과 15분 동네 한 바퀴 산책을 약속해 보아요.'
+      },
+      {
+        id: 24,
+        source: 'AI 제안',
+        status: '채택',
+        title: '의자에 오래 앉아 있던 몸을 펴는 10분 전신 스트레칭 따라 하기',
+        method: '공부나 독서 중간에 10분 휴식 시간을 정해 목 돌리기, 어깨 으쓱하기, 허리 좌우로 비틀기, 발목 돌리기 동작을 천천히 실천합니다.',
+        duration: '약 10분',
+        note: '무리하게 반동을 주거나 아플 정도로 꺾지 말고, 시원한 느낌이 드는 범위까지만 천천히 움직이세요.',
+        successFeedback: '개운하죠! 뻐근했던 몸을 쭉 펴 주며 바른 자세를 되찾았네요!',
+        hardFeedback: '10분이 길었다면 지금 자리에서 일어나 기지개 10초 켜기부터 실천해 보아요!'
+      },
+      {
+        id: 25,
+        source: 'AI 제안',
+        status: '채택',
+        title: '벽에 뒤통수·어깨·뒤꿈치 붙이고 3분간 바른 자세 서기',
+        method: '스마트폰을 내려놓고 평평한 벽 앞에 서서 뒤통수, 양쪽 어깨, 엉덩이, 발뒤꿈치를 벽에 가볍게 대고 턱을 당긴 채 3분간 호흡합니다.',
+        duration: '약 5~10분',
+        note: '허리가 너무 꺾이지 않도록 배에 살짝 힘을 주고, 어지러우면 바로 멈추고 편하게 쉬세요.',
+        successFeedback: '멋져요! 구부정했던 목과 등을 쭉 펴며 바른 자세 감각을 익혔네요!',
+        hardFeedback: '3분이 길게 느껴졌다면 1분씩 세 번으로 나누어 벽 서기를 연습해 보아요.'
+      },
+      {
+        id: 26,
+        source: 'AI 제안',
+        status: '채택',
+        title: '책상 높이·의자 자세 점검하고 바른 자세로 20분 독서하기',
+        method: '의자 깊숙이 엉덩이를 넣고 발바닥을 바닥에 붙인 뒤, 책을 눈높이에 가깝게 들고 20분 동안 바른 자세로 종이책을 읽습니다.',
+        duration: '약 20분',
+        note: '책을 바닥에 놓고 고개를 푹 숙여 읽으면 목이 뻐근해지니 책받침이나 두꺼운 책을 받쳐 높이를 맞추세요.',
+        successFeedback: '완벽해요! 바른 자세와 독서 두 마리 토끼를 모두 잡았네요!',
+        hardFeedback: '20분 내내 자세를 유지하기 어려웠다면 10분마다 어깨를 한 번씩 으쓱하며 자세를 고쳐 앉아 보아요.'
+      },
+      {
+        id: 27,
+        source: 'AI 제안',
+        status: '채택',
+        title: '좋아하는 음악 2곡 틀어 놓고 화면 없이 전신 율동·체조 만들기',
+        method: '화면은 끄고 신나는 음악 소리만 틀어 놓은 채 팔 크게 돌리기, 무릎 높이 들기, 옆구리 늘리기 동작을 리듬에 맞춰 따라 합니다.',
+        duration: '약 10~15분',
+        note: '좁은 방에서는 가구 모서리에 부딪히지 않도록 거실 중앙에서 움직이세요.',
+        successFeedback: '신나는 시간이었죠! 화면 없이도 몸을 움직이니 기분까지 상쾌해졌어요!',
+        hardFeedback: '쑥스러웠다면 좋아하는 노래 한 곡이 끝날 때까지 제자리에서 팔 흔들며 걷기만 해도 충분해요!'
+      },
+      {
+        id: 28,
+        source: 'AI 제안',
+        status: '채택',
+        title: '잠들기 40분 전 스마트폰 책상 충전기에 두고 종이책 10쪽 읽기',
+        method: '잠자리 옆에 스마트폰을 두지 않고 거실이나 책상 위 충전기에 꽂아 둔 뒤, 침대에서는 평소 읽고 싶었던 종이책이나 만화책을 10쪽 읽습니다.',
+        duration: '약 20~40분',
+        note: '어두운 방에서 작은 스탠드만 켜고 책을 읽으면 눈이 피로할 수 있으니 밝은 조명 아래에서 읽은 뒤 불을 끄고 주무세요.',
+        successFeedback: '대단해요! 스마트폰 없이 차분하게 하루를 마무리했군요!',
+        hardFeedback: '오늘 조금 늦었어도 괜찮아요. 내일은 잠들기 15분 전부터 충전기에 꽂아 두는 것부터 도전해 봐요.'
+      },
+      {
+        id: 29,
+        source: 'AI 제안',
+        status: '채택',
+        title: '아침에 일어난 뒤 20분 동안 스마트폰 보지 않고 기지개 켜기',
+        method: '아침에 눈을 뜨자마자 스마트폰을 집어 들지 않고, 이불 위에서 크게 기지개를 켠 뒤 세수하고 물 한 잔을 마시며 하루를 시작합니다.',
+        duration: '약 20분',
+        note: '알람 시계로 스마트폰을 쓴다면 알람만 끄고 바로 책상 위에 내려두세요. 찬물을 급하게 마시지 말고 천천히 마십니다.',
+        successFeedback: '상쾌한 아침 출발이에요! 스마트폰 대신 내 몸을 먼저 깨웠네요!',
+        hardFeedback: '무의식중에 화면을 켰나요? 내일은 잠들기 전 스마트폰을 침대에서 한 걸음 떨어진 곳에 두고 자 보아요.'
+      },
+      {
+        id: 30,
+        source: 'AI 제안',
+        status: '채택',
+        title: '잠들기 30분 전 조용히 눈을 감고 오늘 하루 가장 잘한 일 떠올리기',
+        method: '방 불을 낮추고 스마트폰을 거실에 둔 채 편하게 앉아, 오늘 내가 스스로 뿌듯했던 행동 한 가지를 떠올리며 마음을 가라앉힙니다.',
+        duration: '약 15~30분',
+        note: '다른 전자기기(TV, 태블릿)도 함께 끄고 조용한 환경을 만들어 주세요.',
+        successFeedback: '멋져요! 스스로를 칭찬하며 편안한 휴식 시간을 보냈네요!',
+        hardFeedback: '잡생각이 많이 떠올랐다면 천천히 숨을 들이마시고 내쉬는 호흡에 1분만 집중해 보아요.'
+      }
+    ];
+
+    const STORAGE_KEY = 'practice_group_30day_smartphone_app_v2';
+    const IDB_DB_NAME = 'PracticeGroup30DaySmartphoneAppDB_v2';
+    const IDB_STORE_NAME = 'appProgressStore';
+    const IDB_RECORD_KEY = 'main_progress';
+
+    let currentFilter = 'all';
+
+    // 배열 무작위 셔플 (Fisher-Yates)
+    function createShuffledIds() {
+      const ids = BASE_ACTIVITIES.map((a) => a.id);
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
+      if (ids.length > 1 && ids.every((id, idx) => id === BASE_ACTIVITIES[idx].id)) {
+        [ids[0], ids[1]] = [ids[1], ids[0]];
+      }
+      return ids;
+    }
+
+    function isValidIdPermutation(arr) {
+      if (!Array.isArray(arr) || arr.length !== BASE_ACTIVITIES.length) return false;
+      const validSet = new Set(BASE_ACTIVITIES.map((a) => a.id));
+      return new Set(arr).size === BASE_ACTIVITIES.length && arr.every((id) => validSet.has(id));
+    }
+
+    function createInitialState() {
+      return {
+        _savedAt: 0,
+        selectedDay: 1,
+        dayAssignments: {},       // { [dayNum]: { activityId: number, opened: boolean, outcome: 'success' | 'hard' | null } }
+        completedActivityIds: {}, // { [activityId]: true } -> '실천했어요!' 완료 스탬프 (다음 추천에서 제외)
+        retryPendingIds: {},      // { [activityId]: true } -> '실천이 어려웠어요' 재도전 대기 (아직 완료되지 않음)
+        bottomOrder: createShuffledIds()
+      };
+    }
+
+    function recomputeActivityStatusMaps(stateObj) {
+      const validIds = new Set(BASE_ACTIVITIES.map((a) => a.id));
+      const completed = {};
+      const everFailed = {};
+
+      Object.values(stateObj.dayAssignments || {}).forEach((entry) => {
+        if (!entry || !validIds.has(entry.activityId)) return;
+        if (entry.outcome === 'success') {
+          completed[entry.activityId] = true;
+        } else if (entry.outcome === 'hard') {
+          everFailed[entry.activityId] = true;
+        }
+      });
+
+      const retryPending = {};
+      Object.keys(everFailed).forEach((idStr) => {
+        const idNum = Number(idStr);
+        if (!completed[idNum]) {
+          retryPending[idNum] = true;
+        }
+      });
+
+      stateObj.completedActivityIds = completed;
+      stateObj.retryPendingIds = retryPending;
+    }
+
+    function normalizeLoadedState(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+
+      const validIds = new Set(BASE_ACTIVITIES.map((a) => a.id));
+      const dayAssignments = {};
+
+      if (raw.dayAssignments && typeof raw.dayAssignments === 'object') {
+        Object.entries(raw.dayAssignments).forEach(([dayKey, entry]) => {
+          const dayNum = Number(dayKey);
+          if (!Number.isInteger(dayNum) || dayNum < 1) return;
+          if (!entry || typeof entry !== 'object') return;
+          const actId = Number(entry.activityId);
+          if (!validIds.has(actId)) return;
+          const outcome = entry.outcome === 'success' || entry.outcome === 'hard' ? entry.outcome : null;
+          dayAssignments[dayNum] = {
+            activityId: actId,
+            opened: Boolean(entry.opened),
+            outcome
+          };
+        });
+      }
+
+      const bottomOrder = isValidIdPermutation(raw.bottomOrder)
+        ? [...raw.bottomOrder]
+        : createShuffledIds();
+
+      const selectedDay =
+        Number.isInteger(raw.selectedDay) && raw.selectedDay >= 1
+          ? raw.selectedDay
+          : 1;
+
+      const normalized = {
+        _savedAt: typeof raw._savedAt === 'number' ? raw._savedAt : 1,
+        selectedDay,
+        dayAssignments,
+        completedActivityIds: {},
+        retryPendingIds: {},
+        bottomOrder
+      };
+
+      recomputeActivityStatusMaps(normalized);
+      return normalized;
+    }
+
+    function loadInitialStateFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        return normalizeLoadedState(JSON.parse(raw));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // IndexedDB 열기 및 읽기/쓰기 (기기를 껐다 켜도 기록이 안전하게 유지되도록 이중 저장)
+    function openAppIndexedDB() {
+      return new Promise((resolve) => {
+        if (typeof indexedDB === 'undefined') {
+          resolve(null);
+          return;
+        }
+        try {
+          const req = indexedDB.open(IDB_DB_NAME, 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+              db.createObjectStore(IDB_STORE_NAME);
+            }
+          };
+          req.onsuccess = (e) => resolve(e.target.result);
+          req.onerror = () => resolve(null);
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }
+
+    async function saveToIndexedDB(serializedStr) {
+      try {
+        const db = await openAppIndexedDB();
+        if (!db) return;
+        await new Promise((resolve) => {
+          const tx = db.transaction(IDB_STORE_NAME, 'readwrite');
+          tx.objectStore(IDB_STORE_NAME).put(serializedStr, IDB_RECORD_KEY);
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => {
+            db.close();
+            resolve();
+          };
+        });
+      } catch (e) {}
+    }
+
+    async function loadFromIndexedDB() {
+      try {
+        const db = await openAppIndexedDB();
+        if (!db) return null;
+        return await new Promise((resolve) => {
+          const tx = db.transaction(IDB_STORE_NAME, 'readonly');
+          const req = tx.objectStore(IDB_STORE_NAME).get(IDB_RECORD_KEY);
+          req.onsuccess = () => {
+            const val = req.result;
+            db.close();
+            if (typeof val === 'string') {
+              try {
+                resolve(normalizeLoadedState(JSON.parse(val)));
+                return;
+              } catch (e) {}
+            }
+            resolve(null);
+          };
+          req.onerror = () => {
+            db.close();
+            resolve(null);
+          };
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    let appState = loadInitialStateFromLocalStorage() || createInitialState();
+
+    function saveAppState() {
+      appState._savedAt = Date.now();
+      const serialized = JSON.stringify(appState);
+      try {
+        localStorage.setItem(STORAGE_KEY, serialized);
+      } catch (e) {}
+      saveToIndexedDB(serialized);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getActivityById(actId) {
+      return BASE_ACTIVITIES.find((a) => a.id === actId) || BASE_ACTIVITIES[0];
+    }
+
+    // 전체 표시 일수 계산: 기본 30일 + '실천이 어려웠어요'로 재도전이 필요한 일수만큼 31일차, 32일차... 자동 연장
+    function getTotalDayCount() {
+      const totalActivities = BASE_ACTIVITIES.length;
+      const completedCount = Object.values(appState.completedActivityIds).filter(Boolean).length;
+
+      const assignedDays = Object.keys(appState.dayAssignments)
+        .map((k) => Number(k))
+        .filter((n) => Number.isInteger(n) && n >= 1);
+      const highestAssignedDay = assignedDays.length > 0 ? Math.max(...assignedDays) : 0;
+
+      const failedDaysCount = Object.values(appState.dayAssignments).filter(
+        (entry) => entry && entry.outcome === 'hard'
+      ).length;
+
+      if (completedCount >= totalActivities) {
+        return Math.max(totalActivities, highestAssignedDay);
+      }
+
+      return Math.max(totalActivities + failedDaysCount, highestAssignedDay);
+    }
+
+    // 아직 '실천했어요!'로 성공하지 않은 추천 후보 목록에서 무작위(랜덤) 선택
+    function drawRandomActivityForDay(dayNum) {
+      const existing = appState.dayAssignments[dayNum];
+      if (existing && existing.activityId) {
+        return getActivityById(existing.activityId);
+      }
+
+      // 1. 아직 성공('실천했어요!')하지 않은 후보 목록만 필터링 (성공한 활동은 제외)
+      let candidates = BASE_ACTIVITIES.filter((act) => !appState.completedActivityIds[act.id]);
+
+      // 만약 30개 모두 이미 완료된 상태에서 추가 날짜를 연 경우 전체 목록에서 선택
+      if (candidates.length === 0) {
+        candidates = [...BASE_ACTIVITIES];
+      }
+
+      // 2. 다른 날짜에 이미 열어 두고 아직 완료/실패 버튼을 누르지 않은 활동이 있다면 가급적 중복 배정 회피
+      const openUnansweredIds = new Set(
+        Object.entries(appState.dayAssignments)
+          .filter(([d, entry]) => Number(d) !== dayNum && entry && entry.opened && !entry.outcome)
+          .map(([, entry]) => entry.activityId)
+      );
+      const nonActiveCandidates = candidates.filter((act) => !openUnansweredIds.has(act.id));
+      if (nonActiveCandidates.length > 0) {
+        candidates = nonActiveCandidates;
+      }
+
+      // 3. 직전 날짜와 똑같은 활동이 연속으로 나오지 않도록 후보가 2개 이상이면 직전 날짜 활동 제외
+      const prevEntry = appState.dayAssignments[dayNum - 1];
+      if (prevEntry && candidates.length > 1) {
+        const withoutPrev = candidates.filter((act) => act.id !== prevEntry.activityId);
+        if (withoutPrev.length > 0) {
+          candidates = withoutPrev;
+        }
+      }
+
+      const picked = candidates[Math.floor(Math.random() * candidates.length)];
+      appState.dayAssignments[dayNum] = {
+        activityId: picked.id,
+        opened: true,
+        outcome: null
+      };
+      return picked;
+    }
+
+    function updateCompletedCounter() {
+      const completedCount = Object.values(appState.completedActivityIds).filter(Boolean).length;
+      const retryCount = Object.values(appState.retryPendingIds).filter(Boolean).length;
+      const totalDays = getTotalDayCount();
+
+      const el = document.getElementById('completedCountText');
+      if (el) el.textContent = String(completedCount);
+
+      const retryBadge = document.getElementById('retryCountBadge');
+      if (retryBadge) {
+        if (retryCount > 0) {
+          retryBadge.textContent = `재도전 대기 ${retryCount}개`;
+          retryBadge.classList.remove('hidden');
+        } else {
+          retryBadge.classList.add('hidden');
+        }
+      }
+
+      const totalDaysPill = document.getElementById('totalDaysPill');
+      if (totalDaysPill) {
+        totalDaysPill.textContent =
+          totalDays > BASE_ACTIVITIES.length
+            ? `1일차 ~ ${totalDays}일차 (재도전 연장됨)`
+            : `1일차 ~ ${totalDays}일차`;
+      }
+
+      const allDoneBanner = document.getElementById('allCompletedBanner');
+      const allDoneSubText = document.getElementById('allCompletedSubText');
+      if (allDoneBanner) {
+        if (completedCount >= BASE_ACTIVITIES.length) {
+          allDoneBanner.classList.remove('hidden');
+          if (allDoneSubText) {
+            allDoneSubText.textContent = `총 ${totalDays}일차 도전을 통해 30가지 스마트폰 대체 활동을 모두 완주했습니다!`;
+          }
+        } else {
+          allDoneBanner.classList.add('hidden');
+        }
+      }
+    }
+
+    // 1. 맨 위 날짜 선택 영역 렌더링 (오직 '1일차', '2일차'... 글자만 표시, 활동 내용 절대 비공개!)
+    function renderTopDayButtons() {
+      const grid = document.getElementById('topDayButtonsGrid');
+      if (!grid) return;
+
+      const totalDays = getTotalDayCount();
+      if (appState.selectedDay > totalDays) {
+        appState.selectedDay = totalDays;
+      }
+
+      const buttonsHtml = [];
+      for (let day = 1; day <= totalDays; day++) {
+        const entry = appState.dayAssignments[day] || null;
+        const isSelected = appState.selectedDay === day;
+        const isOpened = Boolean(entry && entry.opened);
+        const outcome = entry ? entry.outcome : null;
+
+        let btnStyle = 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300';
+
+        if (outcome === 'success') {
+          btnStyle = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border-emerald-400';
+        } else if (outcome === 'hard') {
+          btnStyle = 'bg-amber-50 hover:bg-amber-100 text-amber-950 border-amber-400';
+        } else if (isOpened) {
+          btnStyle = 'bg-teal-50 hover:bg-teal-100 text-teal-950 border-teal-300';
+        }
+
+        if (isSelected) {
+          btnStyle = 'bg-teal-600 text-white border-teal-700 ring-2 ring-teal-300 shadow-xs';
+        }
+
+        buttonsHtml.push(`
+          <button
+            type="button"
+            onclick="selectDay(${day})"
+            class="btn-touch rounded-xl border-2 px-2 py-2.5 font-extrabold text-xs sm:text-sm text-center transition ${btnStyle}"
+          >
+            ${day}일차
+          </button>
+        `);
+      }
+
+      grid.innerHTML = buttonsHtml.join('');
+    }
+
+    function selectDay(dayNum) {
+      const totalDays = getTotalDayCount();
+      if (dayNum < 1 || dayNum > totalDays) return;
+      appState.selectedDay = dayNum;
+      saveAppState();
+      renderTopDayButtons();
+      renderDetailSection();
+    }
+
+    function openSelectedDayActivity() {
+      const day = appState.selectedDay;
+      drawRandomActivityForDay(day);
+      saveAppState();
+      updateCompletedCounter();
+      renderTopDayButtons();
+      renderDetailSection();
+    }
+
+    function recordOutcomeForSelectedDay(outcome) {
+      const day = appState.selectedDay;
+      if (!appState.dayAssignments[day] || !appState.dayAssignments[day].opened) {
+        drawRandomActivityForDay(day);
+      }
+      appState.dayAssignments[day].opened = true;
+      appState.dayAssignments[day].outcome = outcome;
+
+      recomputeActivityStatusMaps(appState);
+      saveAppState();
+      updateCompletedCounter();
+      renderTopDayButtons();
+      renderDetailSection();
+      renderBottomActivitiesGrid();
+    }
+
+    // 2. 선택한 날짜의 상세 화면 렌더링 (미개봉 상태일 때는 내용 숨김 유지)
+    function renderDetailSection() {
+      const container = document.getElementById('detailSectionContent');
+      if (!container) return;
+
+      const totalDays = getTotalDayCount();
+      const day = appState.selectedDay;
+      const entry = appState.dayAssignments[day] || null;
+      const isOpened = Boolean(entry && entry.opened && entry.activityId);
+
+      // 아직 열어 보지 않은 날짜는 내용 비공개 상자로 표시
+      if (!isOpened) {
+        container.innerHTML = `
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <span class="px-3.5 py-1 rounded-full bg-slate-900 text-white font-extrabold text-sm sm:text-base">
+                ${day}일차
+              </span>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  onclick="selectDay(${day - 1})"
+                  ${day <= 1 ? 'disabled' : ''}
+                  class="btn-touch px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 font-extrabold text-sm transition"
+                >
+                  ◀ 이전 날
+                </button>
+                <button
+                  type="button"
+                  onclick="selectDay(${day + 1})"
+                  ${day >= totalDays ? 'disabled' : ''}
+                  class="btn-touch px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 font-extrabold text-sm transition"
+                >
+                  다음 날 ▶
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-3xl p-6 sm:p-10 text-center space-y-4 animate-pop">
+              <div class="text-4xl sm:text-5xl">🎁</div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">
+                ${day}일차 랜덤 대체 활동 상자
+              </h3>
+              <p class="text-sm sm:text-base text-slate-600 max-w-md mx-auto leading-relaxed">
+                미리 알면 재미없죠! 아래 버튼을 눌러 아직 완료하지 않은 활동 중 <strong>${day}일차</strong>에 무작위로 뽑힌 활동을 확인해 보세요.
+              </p>
+              <div class="pt-1">
+                <button
+                  type="button"
+                  onclick="openSelectedDayActivity()"
+                  class="btn-touch px-7 py-4 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white font-extrabold text-base sm:text-lg shadow-sm transition"
+                >
+                  🎁 ${day}일차 랜덤 활동 열어 보기
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // 열어 본 날짜의 상세 정보 + 실천 버튼 + 정확한 피드백 출력
+      const activity = getActivityById(entry.activityId);
+      const outcome = entry.outcome || null;
+      const isStudent = activity.source === '학생 작성';
+
+      let stampBadgeHtml = '';
+      if (outcome === 'success') {
+        stampBadgeHtml = `<span class="px-3.5 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-xs sm:text-sm">⭐ 실천 완료 스탬프 (다음 추천에서 제외됨)</span>`;
+      } else if (outcome === 'hard') {
+        stampBadgeHtml = `<span class="px-3.5 py-1 rounded-full bg-amber-500 text-white font-extrabold text-xs sm:text-sm">🔁 재도전 대기 (다음 날 이후 다시 출제됨)</span>`;
+      }
+
+      let feedbackHtml = '';
+      if (outcome === 'success') {
+        feedbackHtml = `
+          <div class="rounded-2xl p-4 sm:p-5 border-2 bg-emerald-50 border-emerald-400 text-emerald-950 animate-pop space-y-2">
+            <div class="text-sm sm:text-base font-extrabold text-emerald-800">🙆 실천했어요! 피드백</div>
+            <p class="text-base sm:text-lg font-extrabold leading-relaxed">${escapeHtml(activity.successFeedback)}</p>
+            <p class="text-xs sm:text-sm text-emerald-800 font-bold">
+              ⭐ 실천 완료 스탬프가 찍혔으며, 성공한 활동이므로 이후 날짜의 랜덤 추천 목록에서는 다시 나오지 않습니다.
+            </p>
+          </div>
+        `;
+      } else if (outcome === 'hard') {
+        feedbackHtml = `
+          <div class="rounded-2xl p-4 sm:p-5 border-2 bg-amber-50 border-amber-400 text-amber-950 animate-pop space-y-2">
+            <div class="text-sm sm:text-base font-extrabold text-amber-900">🤔 실천이 어려웠어요 피드백</div>
+            <p class="text-base sm:text-lg font-extrabold leading-relaxed">${escapeHtml(activity.hardFeedback)}</p>
+            <p class="text-xs sm:text-sm text-amber-900 font-bold">
+              🔁 추천 목록에서 빠지지 않고 유지되어 다음 날 이후의 일정에서 무작위로 다시 출제됩니다! (${totalDays}일차까지 일정이 자동 연장되었어요)
+            </p>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-5 animate-pop">
+          <!-- 상단 날짜, 출처 배지, 이전/다음 날 이동 -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-3.5 py-1 rounded-full bg-teal-600 text-white font-extrabold text-sm sm:text-base">
+                ${day}일차
+              </span>
+              <span class="px-3 py-1 rounded-full font-extrabold text-xs sm:text-sm ${
+                isStudent ? 'bg-emerald-100 text-emerald-900' : 'bg-indigo-100 text-indigo-900'
+              }">
+                ${escapeHtml(activity.source)}
+              </span>
+              ${stampBadgeHtml}
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                onclick="selectDay(${day - 1})"
+                ${day <= 1 ? 'disabled' : ''}
+                class="btn-touch px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 font-extrabold text-sm transition"
+              >
+                ◀ 이전 날
+              </button>
+              <button
+                type="button"
+                onclick="selectDay(${day + 1})"
+                ${day >= totalDays ? 'disabled' : ''}
+                class="btn-touch px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 font-extrabold text-sm transition"
+              >
+                다음 날 ▶
+              </button>
+            </div>
+          </div>
+
+          <!-- 예상 소요 시간 & 활동 이름 -->
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm">
+              <span>⏱ 예상 소요 시간:</span>
+              <span class="text-teal-800 font-extrabold">${escapeHtml(activity.duration)}</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-snug">
+              ${escapeHtml(activity.title)}
+            </h3>
+          </div>
+
+          <!-- 추천하는 방법(내용) & 참고사항(주의사항 등) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-teal-50/70 rounded-2xl border border-teal-200 p-4 sm:p-5 space-y-1.5">
+              <div class="text-sm sm:text-base font-extrabold text-teal-950">📌 추천하는 방법(내용)</div>
+              <p class="text-base sm:text-lg text-slate-800 leading-relaxed">${escapeHtml(activity.method)}</p>
+            </div>
+
+            <div class="bg-amber-50/70 rounded-2xl border border-amber-200 p-4 sm:p-5 space-y-1.5">
+              <div class="text-sm sm:text-base font-extrabold text-amber-950">⚠️ 참고사항(주의사항 등)</div>
+              <p class="text-base sm:text-lg text-slate-800 leading-relaxed">${escapeHtml(activity.note)}</p>
+            </div>
+          </div>
+
+          <!-- 피드백 출력 상자 -->
+          ${feedbackHtml}
+
+          <!-- 실천했어요! / 실천이 어려웠어요 큰 버튼 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <button
+              type="button"
+              onclick="recordOutcomeForSelectedDay('success')"
+              class="btn-touch rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-extrabold text-lg sm:text-xl px-5 py-4 shadow-sm flex items-center justify-center gap-2 transition"
+            >
+              <span>🙆 실천했어요!</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="recordOutcomeForSelectedDay('hard')"
+              class="btn-touch rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-[0.99] text-white font-extrabold text-lg sm:text-xl px-5 py-4 shadow-sm flex items-center justify-center gap-2 transition"
+            >
+              <span>🤔 실천이 어려웠어요</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setListFilter(filterKey) {
+      currentFilter = filterKey;
+      document.querySelectorAll('.filter-btn').forEach((btn) => {
+        const isActive = btn.getAttribute('data-filter') === filterKey;
+        btn.className = isActive
+          ? 'filter-btn btn-touch px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-teal-600 text-white transition'
+          : 'filter-btn btn-touch px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      });
+      renderBottomActivitiesGrid();
+    }
+
+    // 3. 하단 전체 목록 렌더링 (날짜 번호 숨김 · 섞인 순서 · '실천 완료 스탬프' 또는 '재도전 대기' 표시)
+    function renderBottomActivitiesGrid() {
+      const grid = document.getElementById('bottomActivitiesGrid');
+      if (!grid) return;
+
+      const orderedList = appState.bottomOrder
+        .map((id) => BASE_ACTIVITIES.find((a) => a.id === id))
+        .filter(Boolean);
+
+      const filtered = orderedList.filter((act) => {
+        if (currentFilter === 'completed') return Boolean(appState.completedActivityIds[act.id]);
+        if (currentFilter === 'retry') return Boolean(appState.retryPendingIds[act.id]);
+        if (currentFilter === 'student') return act.source === '학생 작성';
+        if (currentFilter === 'ai') return act.source === 'AI 제안';
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-8 text-center text-slate-500 font-bold text-base">
+            아직 해당 조건에 맞는 활동이 없어요.
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered
+        .map((act) => {
+          const isStudent = act.source === '학생 작성';
+          const isCompleted = Boolean(appState.completedActivityIds[act.id]);
+          const isRetryPending = !isCompleted && Boolean(appState.retryPendingIds[act.id]);
+
+          let statusStampHtml = `<span class="text-xs font-bold text-slate-400">도전 대기</span>`;
+          if (isCompleted) {
+            statusStampHtml = `
+              <span class="stamp-badge inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-xs shadow-2xs">
+                <span>⭐ 실천 완료 스탬프</span>
+              </span>
+            `;
+          } else if (isRetryPending) {
+            statusStampHtml = `
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-xs">
+                <span>🔁 재도전 대기</span>
+              </span>
+            `;
+          }
+
+          return `
+            <button
+              type="button"
+              onclick="openActivityInfoModal(${act.id})"
+              class="text-left rounded-2xl border-2 p-4 flex flex-col justify-between gap-3 transition shadow-2xs ${
+                isCompleted
+                  ? 'border-emerald-400 bg-emerald-50/50 hover:bg-emerald-50'
+                  : isRetryPending
+                  ? 'border-amber-300 bg-amber-50/35 hover:bg-amber-50/70'
+                  : 'border-slate-200 bg-white hover:border-teal-400 hover:bg-slate-50'
+              }"
+            >
+              <div>
+                <div class="flex items-center justify-between gap-1.5 mb-2">
+                  <span class="px-2.5 py-0.5 rounded-full font-extrabold text-xs ${
+                    isStudent ? 'bg-emerald-100 text-emerald-900' : 'bg-indigo-100 text-indigo-900'
+                  }">
+                    ${escapeHtml(act.source)}
+                  </span>
+                  ${statusStampHtml}
+                </div>
+
+                <h3 class="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">
+                  ${escapeHtml(act.title)}
+                </h3>
+              </div>
+
+              <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <span>⏱ ${escapeHtml(act.duration)}</span>
+                <span class="font-bold text-teal-700">내용 보기 →</span>
+              </div>
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    // 하단 카드 클릭 시 상세 내용 팝업 (몇 일차인지 날짜 번호는 숨김 유지)
+    function openActivityInfoModal(activityId) {
+      const act = BASE_ACTIVITIES.find((a) => a.id === activityId);
+      if (!act) return;
+
+      const isStudent = act.source === '학생 작성';
+      const isCompleted = Boolean(appState.completedActivityIds[act.id]);
+      const isRetryPending = !isCompleted && Boolean(appState.retryPendingIds[act.id]);
+
+      const badgesEl = document.getElementById('modalActivityBadges');
+      if (badgesEl) {
+        badgesEl.innerHTML = `
+          <span class="px-3 py-1 rounded-full font-extrabold text-xs sm:text-sm ${
+            isStudent ? 'bg-emerald-100 text-emerald-900' : 'bg-indigo-100 text-indigo-900'
+          }">
+            ${escapeHtml(act.source)}
+          </span>
+          ${
+            isCompleted
+              ? '<span class="px-3 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-xs sm:text-sm">⭐ 실천 완료 스탬프</span>'
+              : isRetryPending
+              ? '<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-xs sm:text-sm">🔁 재도전 대기 (미완료)</span>'
+              : ''
+          }
+        `;
+      }
+
+      document.getElementById('modalActivityDuration').textContent = act.duration;
+      document.getElementById('modalActivityTitle').textContent = act.title;
+      document.getElementById('modalActivityMethod').textContent = act.method;
+      document.getElementById('modalActivityNote').textContent = act.note;
+
+      document.getElementById('activityInfoModal').classList.remove('hidden');
+    }
+
+    function closeActivityInfoModal() {
+      document.getElementById('activityInfoModal').classList.add('hidden');
+    }
+
+    function openResetModal() {
+      document.getElementById('resetModal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+      document.getElementById('resetModal').classList.add('hidden');
+    }
+
+    function confirmResetRecords() {
+      appState = createInitialState();
+      saveAppState();
+      updateCompletedCounter();
+      renderTopDayButtons();
+      renderDetailSection();
+      renderBottomActivitiesGrid();
+      closeResetModal();
+    }
+
+    async function initApp() {
+      // 앱 종료·백그라운드 전환 직전에도 저장 보장
+      const flushSave = () => saveAppState();
+      window.addEventListener('beforeunload', flushSave);
+      window.addEventListener('pagehide', flushSave);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') flushSave();
+      });
+
+      // IndexedDB에 더 최신 기록이 있으면 복원 (localStorage가 초기화된 환경 대비)
+      const localState = loadInitialStateFromLocalStorage();
+      const idbState = await loadFromIndexedDB();
+      if (idbState && (!localState || (idbState._savedAt || 0) > (localState._savedAt || 0))) {
+        appState = idbState;
+      }
+
+      saveAppState();
+      updateCompletedCounter();
+      renderTopDayButtons();
+      renderDetailSection();
+      renderBottomActivitiesGrid();
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+</body>
+</html>
